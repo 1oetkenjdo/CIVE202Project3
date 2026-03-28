@@ -2,61 +2,144 @@
 
 ## Summary
 
-This folder holds the Project 3 analysis that explores travel behavior using the NHTS household travel survey and vehicle trajectory data from NGSIM. The notebook and supporting scripts generate visualizations of NHTS summary statistics, extract and visualize NGSIM trajectory time-series (leader/follower speeds and headway), and run an Intelligent Driver Model (IDM) simulation to compare simulated follower behavior with observations.
+This project analyzes transportation behavior using two major datasets provided by the Federal Highway Administration (FHWA):
 
-Key goals:
+- **NHTS (National Household Travel Survey)** — provides insight into travel behavior and usage trends
+- **NGSIM (Next Generation Simulation)** — provides high-resolution vehicle trajectory data for analyzing driving behavior
 
-- Create clear visualizations for assignment deliverables
-- Allow targeted inspection of individual NGSIM trajectories
-- Run a simple IDM simulation and report error metrics (RMSE)
+The objective of this project is to create clear visualizations of transportation trends and perform a simulation study using the Intelligent Driver Model (IDM) to compare observed and simulated vehicle-following behavior.
 
-## Contents
+This work supports visualization and simulation tasks commonly requested for transportation planning and analysis.
 
-- `NHTS.csv` — Household travel survey data used for summary plots
-- `NGSIM.csv` — Trajectory-level vehicle data used for time-series and IDM
-- `Code Files/CIVE202_SPR26_OETKEN_FINALP3.ipynb` — Main analysis notebook (open and run interactively)
-- `Code Files/*.ipynb` — Additional lab/notebook materials
+---
+
+## Repository Contents
+
+- `NHTS.csv` — Travel survey dataset used for summary visualizations
+- `NGSIM.csv` — Vehicle trajectory dataset used for time-series analysis and IDM simulation
+- `Code Files/CIVE202_SPR26_OETKEN_FINALP3.ipynb` — **Main notebook (run this file)**
+- Miscellaneous supporting lab materials (not required for execution)
+
+---
 
 ## Requirements
 
-- Python 3.8+ recommended
-- Required packages: `pandas`, `numpy`, `matplotlib`, `seaborn`
+- Python 3.8+
+- Required libraries:
+  - `pandas`
+  - `numpy`
+  - `matplotlib`
+  - `seaborn`
 
-Install requirements (example):
+Install dependencies:
 
 ```bash
 python -m pip install pandas numpy matplotlib seaborn
 ```
 
-## How to run (Notebook)
+## How to Run (Step-by-Step)
 
-1. Open the notebook `Code Files/CIVE202_SPR26_OETKEN_FINALP3.ipynb` in Jupyter Notebook, JupyterLab, or VS Code.
-2. Initiate a Python environment, run all cells, and proceed to fill out the prompts asked.
-3. To run a different IDM, locate the parameter cells at the bottom of the page ( 6) Intelligent Driver Model (IDM) Simulation Study ).  Example assignments you will see in the notebook:
+1. Open the main notebook: `Code Files/CIVE202_SPR26_OETKEN_FINALP3.ipynb`.
+2. Ensure the following files are in the working directory: `NHTS.csv` and `NGSIM.csv`.
+3. Start a Python kernel and run cells sequentially from top to bottom.
+4. When prompted, enter the requested NGSIM trajectory IDs (examples given below).
+5. Continue running the remaining cells to generate all visualizations and complete the IDM simulation study.
+
+Example trajectory IDs used in the report analysis:
 
 ```python
-a_max = ____ #Maximum acceleration (m/s^2)
-b = ____ #Comfortable deceleration (m/s^2)
-delta = ____ #Acceleration exponent
-t_headway = ____ #Desired time headway (s)
-s0 = ____ #Minimum spacing (m)
-v0 = ____ #Desired speed (m/s)
-vehicle_length = ____ #Average vehicle length (m)
+trajectory_id1 = 12
+trajectory_id2 = 13
+trajectory_id3 = 13
+trajectory_id4 = 13
 ```
 
-## Code Walkthrough
+---
 
-This notebook implements the full analysis in a sequence of logical steps. Below is a concise explanation of each stage and the key functions or cells you will encounter:
+## Sequential User Inputs (Required)
 
-- **Load data**: the notebook reads `NHTS.csv` and `NGSIM.csv` into pandas DataFrames.
-- **Prepare NHTS**: a preparation step derives fields used by plots (month/year split, numeric `vehicle_age`).
-- **NHTS plots**: three plotting cells create (1) a bar chart of trips by weekday, (2) a histogram of vehicle ages, and (3) a boxplot of vehicle age by census region. These cells call plotting routines that either display inline or save to an `output_dir` when defined.
-- **Select NGSIM trajectory**: a parameter cell sets `trajectory_id1` (e.g., `trajectory_id1 = 12`) and the notebook creates a subset `traj = ngsim.loc[ngsim['trajectory_number']==trajectory_id1].copy().sort_values('Time')` for all downstream analyses.
-  - This happens twice, to allow comparison between two selected trajectories.
-- **NGSIM time-series plots**: the notebook plots leader vs follower speeds over time and a customized dual-axis plot showing space headway and relative speed. These visualize driving behavior for the chosen trajectory.
-- **IDM simulation**: the notebook integrates a simple Intelligent Driver Model using parameters shown above (`a_max`, `b`, `delta`, `t_headway`, `s0`, `v0`, `vehicle_length`). It simulates follower position and speed through time, compares the simulation with observed follower data, plots comparisons, and computes RMSE metrics for speed and position.
+The notebook requires two sets of user-defined inputs.
 
-Where to change behavior:
+1. Trajectory Selection
 
-- Trajectory IDs will be changed using user inputs.
-- Adjust IDM parameters in the IDM parameter cell to experiment with different driving behaviors via explanation above.
+```python
+trajectory_id1 = ____
+trajectory_id2 = ____
+trajectory_id3 = ____
+trajectory_id4 = ____
+```
+
+These values determine which vehicle trajectories are analyzed:
+Trajectory IDs 1 and 2 are used to compare leader-follower dynamics and car-following behaviors, and IDs 3 and 4 are then used for the time-series plots and the IDM simulation, respectively.
+
+1. IDM Parameters
+
+Located in the IDM simulation section of the notebook:
+
+```python
+a_max = ____          # Maximum acceleration (m/s^2)
+b = ____              # Comfortable deceleration (m/s^2)
+delta = ____          # Acceleration exponent
+t_headway = ____      # Desired time headway (s)
+s0 = ____             # Minimum spacing (m)
+v0 = ____             # Desired speed (m/s)
+vehicle_length = ____ # Average vehicle length (m)
+```
+
+These parameters define the simulated driver behavior and directly impact IDM accuracy. The notebook includes sensible defaults which are used and analyzed in the report:
+
+```python
+a_max = 1.2
+b = 1.8
+delta = 4
+t_headway = 1.5
+s0 = 2.0
+v0 = 30.0
+vehicle_length = 5.0
+```
+
+---
+
+## Outputs Generated
+
+### NHTS Visualizations
+
+- Bar chart — Trips by weekday
+- Histogram — Distribution of vehicle age
+- Boxplot — Vehicle age by census region
+
+### NGSIM Time-Series Analysis
+
+- Leader vs follower speed over time
+- Space headway and relative speed (dual-axis plot)
+
+### IDM Simulation Results
+
+- Simulated vs observed follower speed
+- Simulated vs observed vehicle position
+- RMSE (Root Mean Square Error) for speed and position
+
+---
+
+## Code Workflow
+
+The notebook executes the following sequence:
+
+1. Load datasets (`NHTS.csv`, `NGSIM.csv`).
+2. Clean and prepare NHTS variables and derived fields.
+3. Generate required NHTS visualizations (bar, histogram, boxplot).
+4. Select two trajectories from the NGSIM dataset and create subsets for each.
+5. Generate time-series plots for driving behavior for each selected trajectory.
+6. Apply the Intelligent Driver Model (IDM) to the follower vehicle for each trajectory.
+7. Compare simulated vs observed results and compute RMSE error metrics.
+
+Run the notebook top-to-bottom, once prompted, set `trajectory_id` values and, if desired, change the IDM parameters to reproduce all figures and metrics.
+
+---
+
+### Note on plotting and saving figures
+
+- By default, the notebook displays figures inline using `plt.show()`.
+  - There is no saved output of plots created within the notebook.
+
+---
