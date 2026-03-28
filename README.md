@@ -2,7 +2,7 @@
 
 ## Summary
 
-This project analyzes transportation behavior using two major datasets used by the Federal Highway Administration (FHWA):
+This project analyzes transportation behavior using two major datasets provided by the Federal Highway Administration (FHWA):
 
 - **NHTS (National Household Travel Survey)** — provides insight into travel behavior and usage trends
 - **NGSIM (Next Generation Simulation)** — provides high-resolution vehicle trajectory data for analyzing driving behavior
@@ -60,7 +60,7 @@ trajectory_id4 = 13
 
 The notebook requires two sets of user-defined inputs.
 
-1. Trajectory Selection
+### Trajectory Selection
 
 ```python
 trajectory_id1 = ____
@@ -72,7 +72,7 @@ trajectory_id4 = ____
 These values determine which vehicle trajectories are analyzed:
 Trajectory IDs 1 and 2 are used to compare leader-follower dynamics and car-following behaviors, and IDs 3 and 4 are then used for the time-series plots and the IDM simulation, respectively.
 
-1. IDM Parameters
+### IDM Parameters
 
 Located in the IDM simulation section of the notebook:
 
@@ -97,6 +97,21 @@ s0 = 2.0
 v0 = 30.0
 vehicle_length = 5.0
 ```
+
+---
+
+### Sensitivity to IDM Parameters
+
+Parameters are the model's assumptions, changing them directly impacts model behavior:
+
+| Parameter | Meaning | Effect of increasing |
+| --- | --- | --- |
+| `a_max` | Maximum acceleration | More aggressive acceleration behavior |
+| `b` | Comfortable deceleration | Stronger braking response |
+| `delta` | Acceleration exponent | More nonlinear / sharper acceleration response (stronger dependence on speed ratio) |
+| `t_headway` | Desired time headway | More conservative driving, and therefore, larger gaps |
+| `s0` | Minimum spacing | Larger minimum spacing (safer, but less efficient flow) |
+| `v0` | Desired speed | Higher free‑flow target speed |
 
 ---
 
@@ -133,13 +148,72 @@ The notebook executes the following sequence:
 6. Apply the Intelligent Driver Model (IDM) to the follower vehicle for each trajectory.
 7. Compare simulated vs observed results and compute RMSE error metrics.
 
-Run the notebook top-to-bottom, once prompted, set `trajectory_id` values and, if desired, change the IDM parameters to reproduce all figures and metrics.
+Run the notebook top-to-bottom, once prompted, set `trajectory_id` values and IDM parameters to reproduce all figures and metrics.
 
 ---
 
 ### Note on plotting and saving figures
 
-- By default, the notebook displays figures inline using `plt.show()`.
+- By default the notebook displays figures inline using `plt.show()`.
   - There is no saved output of plots created within the notebook.
 
 ---
+
+## Interpretation of Outputs
+
+### NHTS Visualizations (Travel Behavior Trends)
+
+#### Bar Chart - Trips by Weekday
+
+- Shows how travel demand varies across the week. Higher bars indicate peak travel days (typically weekdays because of commuting).
+- Use this to infer demand patterns and identify potential congestion periods.
+- If weekend bars are comparable to weekdays, that suggests more discretionary or non-work travel in the sample.
+
+#### Histogram - Vehicle Age Distribution
+
+- Displays the distribution of vehicle ages in the dataset.
+- A right-skewed distribution (long tail to the right) suggests slower fleet turnover and may indicate emissions or safety concerns.
+- A left-skewed distribution suggests a relatively newer fleet.
+
+#### Boxplot - Vehicle Age by Census Region
+
+- Compares vehicle-age distributions across regions.
+- Look for median differences to identify regions with older fleets, IQR to assess variability, and outliers to detect unusually old vehicles.
+- These differences can reveal regional disparities in vehicle ownership, turnover, and economic conditions.
+
+### NGSIM Time-Series Analysis (Driving Behavior)
+
+#### Leader vs Follower Speed Plot
+
+- Useful for evaluating car-following and stability.
+- If the follower closely tracks the leader, behavior is stable; large delays or oscillations indicate instability or stop-and-go dynamics.
+- Sudden drops in speed often reveal braking events or congestion waves.
+
+#### Space Headway and Relative Speed Plot
+
+- Space headway = leader_position − follower_position; relative speed = leader_speed − follower_speed.
+- Decreasing headway with negative relative speed → follower closing in (potential risk).
+- Increasing headway with positive relative speed → vehicles separating.
+- Stable traffic: headway roughly constant and relative speed near zero.
+
+---
+
+### IDM Simulation Results (Model Evaluation)
+
+#### Simulated vs Observed Speed
+
+- A good fit is when the simulated speed curve closely overlaps the observed follower speed.
+- Poor fits show time lags, overshoots, or excessive oscillations. Consistent overreaction often points to unrealistic `a_max`, `b`, or `t_headway` values.
+
+#### Simulated vs Observed Position
+
+- Position errors accumulate over time; small speed biases will grow into larger position divergences.
+- Large divergence implies poor calibration or model instability.
+
+#### RMSE (Root Mean Square Error)
+
+- Quantifies fit: lower RMSE indicates a better match between simulated and observed traces.
+- Interpretation tips:
+  - Compare RMSE across parameter sets to identify better configurations.
+  - Low speed RMSE but high position RMSE suggests a small persistent bias in speed.
+  - High values for both indicate the model does not capture the observed dynamics well.
