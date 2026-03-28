@@ -2,7 +2,7 @@
 
 ## Summary
 
-This project analyzes transportation behavior using two major datasets provided by the Federal Highway Administration (FHWA):
+This project analyzes transportation behavior using two major datasets used by the Federal Highway Administration (FHWA):
 
 - **NHTS (National Household Travel Survey)** — provides insight into travel behavior and usage trends
 - **NGSIM (Next Generation Simulation)** — provides high-resolution vehicle trajectory data for analyzing driving behavior
